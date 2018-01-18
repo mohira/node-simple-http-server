@@ -47,7 +47,7 @@ TCP.server と events.EventEmitter を継承したもの
 ## node独自
 [ ] イベントループ
 [ ] テストフレームワーク
-
+[ ] WebSocketをつかったリアルタイムなんたら
 
 
 

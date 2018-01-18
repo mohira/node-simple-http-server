@@ -1,6 +1,9 @@
 const frisby = require("frisby");
 const base_url = "http://localhost:8888"
 
+// TODO: itブロック的なのでまとめられそう
+// TODO: 命名どうする？ 「=>方式」 もいいかも？
+
 frisby.create("/index.html     => public/index.html")
     .get(base_url + "/index.html")
     .expectHeaderContains("content-type", "text/html")
@@ -49,7 +52,19 @@ frisby.create("POST request, return 400 BadRequestError")
     .expectStatus(400)
     .toss()
 
+frisby.create("not_index_dir is directory but dosen't have index.html")
+    .get(base_url + "/not_index_dir")
+    .expectHeaderContains("content-type", "text/html")
+    .expectStatus(404)
+    .toss()
 
+frisby.create("request no permission file")
+    .get(base_url + "/no_permission.log")
+    .expectHeaderContains("content-type", "text/html")
+    .expectStatus(403)
+    .toss()
+
+// frisbyの出力確認用コード
 // frisby.create("出力で確認").get(base_url + "/cat.jpg")
 // // .addHeaders(
 // //     {
@@ -63,4 +78,3 @@ frisby.create("POST request, return 400 BadRequestError")
 // // .inspectJSON()        // レスポンスbody をJSON出力
 // // .inspectStatus()      // レスポンスステータスコードを出力
 // .toss();
-

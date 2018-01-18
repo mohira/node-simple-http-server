@@ -9,19 +9,20 @@ mime_estimate = extname => {
 
 module.exports = class MyServer {
     run() {
-        const http   = require("http")
-        const url    = require("url")
-        const path   = require("path")
-        const fs     = require("fs")
-        const port   = 8888
-        const server = http.createServer()
+        const http    = require("http")
+        const url     = require("url")
+        const path    = require("path")
+        const fs      = require("fs")
+        const port    = 8888
+        const server  = http.createServer()
+        const htpaswd = {user: "pass"}
 
         server.on("request", (req, res) => {
             var Response = {
                 "200": (filedata, extname) => {
                     const headers = {"Content-Type": mime_estimate(extname)}
                     res.writeHead(200, headers)
-                    res.end(filedata)
+                    res.end(filedata, "binary")
                 },
                 "400": () => {
                     const path_400 = path.join(process.cwd(), "public/400.html")
@@ -70,8 +71,16 @@ module.exports = class MyServer {
 
                 fs.readFile(path_name, "binary", (err, filedata) => {
                     if (err) {
-                        Response["404"]()
-                        return
+                        if (err.code === "EACCES") {
+                            console.log(err)
+                            Response["403"]()
+                            return
+                        }
+                        if (err.code === "ENOENT") {
+                            console.log(err)
+                            Response["404"]()
+                            return
+                        }                        
                     }
 
                     Response["200"](filedata, path.extname(path_name))
