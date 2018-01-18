@@ -1,8 +1,14 @@
+const MyServer = require("../my_server.js")
+const port = 3333
+my_server = new MyServer(port)
+my_server.run()
+
 const frisby = require("frisby");
-const base_url = "http://localhost:8888"
+const base_url = "http://localhost:" + port
 
 // TODO: itブロック的なのでまとめられそう
 // TODO: 命名どうする？ 「=>方式」 もいいかも？
+// TODO: 全てのテストが終わったらサーバー落としたい
 
 frisby.create("/index.html     => public/index.html")
     .get(base_url + "/index.html")

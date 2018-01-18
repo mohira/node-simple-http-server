@@ -8,17 +8,18 @@ mime_estimate = extname => {
 }
 
 module.exports = class MyServer {
+    constructor(port) {
+        this.port = port || 8888
+    }
+
     run() {
-        const http    = require("http")
-        const url     = require("url")
-        const path    = require("path")
-        const fs      = require("fs")
-        const port    = 8888
-        const server  = http.createServer()
-        const htpaswd = {user: "pass"}
+        const http   = require("http")
+        const path   = require("path")
+        const fs     = require("fs")
+        const server = http.createServer()
 
         server.on("request", (req, res) => {
-            var Response = {
+            const Response = {
                 "200": (filedata, extname) => {
                     const headers = {"Content-Type": mime_estimate(extname)}
                     res.writeHead(200, headers)
@@ -28,28 +29,28 @@ module.exports = class MyServer {
                     const path_400 = path.join(process.cwd(), "public/400.html")
                     const headers = {"Content-Type": "text/html"}
 
-                    res.writeHead(400, headers);
+                    res.writeHead(400, headers)
                     fs.readFile(path_400, "utf-8", (err, filedata) => res.end(filedata))
                 },
                 "403": () => {
                     const path_403 = path.join(process.cwd(), "public/403.html")
                     const headers = {"Content-Type": "text/html"}
 
-                    res.writeHead(403, headers);
+                    res.writeHead(403, headers)
                     fs.readFile(path_403, "utf-8", (err, filedata) => res.end(filedata))
                 },
                 "404": () => {
                     const path_404 = path.join(process.cwd(), "public/404.html")
                     const headers = {"Content-Type": "text/html"}
 
-                    res.writeHead(404, headers);
+                    res.writeHead(404, headers)
                     fs.readFile(path_404, "utf-8", (err, filedata) => res.end(filedata))
                 },
                 "500": err => {
                     const path_500 = path.join(process.cwd(), "public/500.html")
                     const headers = {"Content-Type": "text/html"}
 
-                    res.writeHead(500, headers);
+                    res.writeHead(500, headers)
                     fs.readFile(path_500, "utf-8", (err, filedata) => res.end(filedata))
                 }
             }
@@ -70,27 +71,26 @@ module.exports = class MyServer {
                 path_name += fs.statSync(path_name).isDirectory() ? "/index.html" : ""
 
                 fs.readFile(path_name, "binary", (err, filedata) => {
-                    if (err) {
-                        if (err.code === "EACCES") {
-                            console.log(err)
-                            Response["403"]()
-                            return
-                        }
-                        if (err.code === "ENOENT") {
-                            console.log(err)
-                            Response["404"]()
-                            return
-                        }                        
+                    if (!err) {
+                        Response["200"](filedata, path.extname(path_name))
+                        return
+                    } 
+
+                    if (err.code === "EACCES") {
+                        Response["403"]()
+                        return
                     }
 
-                    Response["200"](filedata, path.extname(path_name))
-                }); 
+                    if (err.code === "ENOENT") {
+                        Response["404"]()
+                        return
+                    }
+                }) 
             })
-
+            // TODO: ここまできたら500でもいいのかね？
+            Response["500"]
         })
-        server.listen(port)
-        console.log("Server running at http://localhost:" + port)
+        server.listen(this.port)
+        console.log("Server running at http://localhost:" + this.port)
     }
 }
-
-

@@ -46,6 +46,7 @@ TCP.server と events.EventEmitter を継承したもの
 
 ## node独自
 [ ] イベントループ
+    イベントループだから、my_server.close()を差し込むとアサーション終わる前にCLOSEして／(^o^)＼となる
 [ ] テストフレームワーク
 [ ] WebSocketをつかったリアルタイムなんたら
 

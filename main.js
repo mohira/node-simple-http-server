@@ -1,3 +1,4 @@
 const MyServer = require("./my_server.js")
-my_server = new MyServer()
+const port = 7777
+my_server = new MyServer(port)
 my_server.run()
