@@ -26,7 +26,7 @@ module.exports = class MyServer {
                     res.end(file_data, "binary")
                 },
                 "Fail": status_code => {
-                    const path_name = path.join(process.cwd(), "public/" + status_code + ".html")
+                    const path_name = path.join(__dirname, "public/" + status_code + ".html")
                     const headers = {"Content-Type": "text/html"}
 
                     res.writeHead(status_code, headers)
@@ -36,7 +36,7 @@ module.exports = class MyServer {
 
             if (req.method !== "GET") { return Response["Fail"](400) }
 
-            let path_name = path.join(process.cwd(), "public/" + req.url)
+            let path_name = path.join(__dirname, "public/" + req.url)
 
             fs.exists(path_name, is_exist => {
                 if (!is_exist) { return Response["Fail"](404) }
@@ -50,6 +50,7 @@ module.exports = class MyServer {
                     if (err.code === "ENOENT") { return Response["Fail"](404) }
 
                     // TODO: ここまできたら500でもいいのかね？
+                    // TODO: 標準出力じゃなくてロギングの方がよさそうじゃね？
                     console.log(err)
                     return Response["Fail"](500)
                 }) 
